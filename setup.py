@@ -8,7 +8,7 @@ setup(
 		version="0.3.2",  # REV-CONSTANT:rev 5d022db7d38f580a850cd995e26a6c2f
 		description="Routines support text sanitization",
 		py_modules=[
-				"common_sanitize",
+				"commonutil_sanitize",
 		],
 		classifiers=[
 				"Development Status :: 5 - Production/Stable",
