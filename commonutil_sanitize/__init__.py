@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-""" 非法字元清除輔助函式庫 / Routines perform text sanitize """
+"""非法字元清除輔助函式庫 / Routines perform text sanitize"""
 
+from __future__ import annotations
+
+from typing import Optional
 from string import ascii_letters, digits
 
 # {{{ 以下常數字串可搭配 via_allowed() 等使用黑/白名單的函式使用
@@ -8,8 +11,13 @@ from string import ascii_letters, digits
 WHITE_CHARACTERS = " \t\n\r\v\f\x00"  #: 應被視為空白字元的字元集 (常用於進行 strip 處理) / Characters treat as spaces in general cases
 DWHITE_CHARACTERS = ". \t\n\r\v\f\x00"  #: 應被視為空白字元由檔名前後去除的字元集 (常用於進行檔名的 strip 處理，比單純的空白字元集多了點號) / Characters treat as spaces in file name
 
-ALPHANUMBER_CHARCTERS = ascii_letters + digits  #: 大小寫英文字母與數字 / Upper and lower case of alphabets and digits
-ALPHANUMBERDASHUL_CHARCTERS = ALPHANUMBER_CHARCTERS + "-_"  #: 大小寫英文字母、數字、減號、底線 / Upper and lower case of alphabets, digits, dash and underline
+ALPHANUMBER_CHARCTERS = (
+	ascii_letters + digits
+)  #: 大小寫英文字母與數字 / Upper and lower case of alphabets and digits
+
+ALPHANUMBERDASHUL_CHARCTERS = (
+	ALPHANUMBER_CHARCTERS + "-_"
+)  #: 大小寫英文字母、數字、減號、底線 / Upper and lower case of alphabets, digits, dash and underline
 
 IDENTIFIER_START_CHARCTERS = ascii_letters + "_"
 IDENTIFIER_CHARCTERS = ALPHANUMBER_CHARCTERS + "_"
@@ -33,10 +41,20 @@ def path_component(original_name: str) -> str:
 	"""
 	if not isinstance(original_name, str):
 		original_name = str(original_name, "utf-8", "ignore")
-	return ''.join(["_" if (c in "\\/*?:<>|\t\n\r") else c for c in original_name.strip(". \t\n\r\v\f\x00")])
+	return "".join(
+		[
+			"_" if (c in "\\/*?:<>|\t\n\r") else c
+			for c in original_name.strip(". \t\n\r\v\f\x00")
+		]
+	)
 
 
-def via_allowed(val: str, allowed_characters: str = "0123456789", replace_char: str = "_", strip_characters: str = None) -> str:
+def via_allowed(
+	val: str,
+	allowed_characters: str = "0123456789",
+	replace_char: str = "_",
+	strip_characters: Optional[str] = None,
+) -> str:
 	"""
 	將字串中未列在允許字元的字元代換成指定字元
 
@@ -56,14 +74,16 @@ def via_allowed(val: str, allowed_characters: str = "0123456789", replace_char: 
 	val = str(val)
 	if strip_characters is not None:
 		val = val.strip(strip_characters)
-	return ''.join([c if (c in allowed_characters) else replace_char for c in val])
+	return "".join([c if (c in allowed_characters) else replace_char for c in val])
 
 
-def to_identifier(val: str,
-					allowed_start_characters: str = IDENTIFIER_START_CHARCTERS,
-					allowed_characters: str = IDENTIFIER_CHARCTERS,
-					replace_char: str = "_",
-					strip_characters: str = DWHITE_CHARACTERS) -> str:
+def to_identifier(
+	val: str,
+	allowed_start_characters: str = IDENTIFIER_START_CHARCTERS,
+	allowed_characters: str = IDENTIFIER_CHARCTERS,
+	replace_char: str = "_",
+	strip_characters: str = DWHITE_CHARACTERS,
+) -> str:
 	"""
 	將給定字串一允許字元規則轉換成識別字串
 
@@ -86,4 +106,6 @@ def to_identifier(val: str,
 		return replace_char
 	c0 = val[0]
 	c0 = c0 if (c0 in allowed_start_characters) else replace_char
-	return c0 + ''.join([c if (c in allowed_characters) else replace_char for c in val[1:]])
+	return c0 + "".join(
+		[c if (c in allowed_characters) else replace_char for c in val[1:]]
+	)
